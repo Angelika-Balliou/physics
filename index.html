@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Φυσική στο Γυμνάσιο</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Commissioner:wght@400;500;600;700&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a physicist's lab notebook — graph-paper ground, classical Greek display type, measurements set in mono. */
+:root{
+  --paper:#f4f6f3;
+  --sheet:#ffffff;
+  --ink:#152238;
+  --muted:#56637a;
+  --grid:rgba(36,70,199,.07);
+  --line:#d5dbe6;
+  --accent:#2446c7;
+  --accent-soft:#e6ebfb;
+  --mark:#c8432c;
+  --ok:#1f7a4d;
+  --ok-soft:#e3f3ea;
+  --bad:#b3261e;
+  --bad-soft:#fbe7e5;
+  --display:"GFS Didot","Noto Serif",Georgia,serif;
+  --body:"Commissioner","Noto Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"Fira Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f1522; --sheet:#161e2e; --ink:#e7ecf5; --muted:#a3afc4; --grid:rgba(125,151,255,.07);
+    --line:#2a3550; --accent:#8aa2ff; --accent-soft:#1d2849; --mark:#ff8a72;
+    --ok:#6fd3a0; --ok-soft:#173326; --bad:#ff9a90; --bad-soft:#3a1d1b; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f1522; --sheet:#161e2e; --ink:#e7ecf5; --muted:#a3afc4; --grid:rgba(125,151,255,.07);
+  --line:#2a3550; --accent:#8aa2ff; --accent-soft:#1d2849; --mark:#ff8a72;
+  --ok:#6fd3a0; --ok-soft:#173326; --bad:#ff9a90; --bad-soft:#3a1d1b; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  color:var(--ink); font-family:var(--body); font-size:16.5px; line-height:1.6;
+}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent); outline-offset:2px; border-radius:4px}
+.wrap{max-width:1080px; margin:0 auto; padding:0 20px}
+h1,h2,h3{font-family:var(--display); font-weight:400; line-height:1.15; text-wrap:balance; margin:0}
+h1{font-size:clamp(2.3rem,5.5vw,3.6rem); letter-spacing:.005em}
+h2{font-size:clamp(1.7rem,3.4vw,2.3rem)}
+h3{font-size:1.35rem}
+p{margin:0}
+.mono{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* header */
+header.top{border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--paper) 88%,transparent); position:sticky; top:0; z-index:5; backdrop-filter:blur(6px)}
+.top .wrap{display:flex; align-items:center; gap:18px; flex-wrap:wrap; padding-top:10px; padding-bottom:10px}
+.brand{display:flex; align-items:baseline; gap:10px; text-decoration:none; color:var(--ink)}
+.brand b{font-family:var(--display); font-weight:400; font-size:1.45rem}
+.brand span{font-family:var(--mono); font-size:.8rem; color:var(--mark)}
+nav.main{display:flex; gap:6px; flex-wrap:wrap; margin-left:auto}
+nav.main a{text-decoration:none; color:var(--muted); font-weight:500; padding:6px 12px; border-radius:999px; border:1px solid transparent; font-size:.95rem}
+nav.main a:hover{color:var(--ink); border-color:var(--line)}
+nav.main a[aria-current="page"]{color:var(--accent); background:var(--accent-soft)}
+
+/* hero */
+.hero{padding:44px 0 28px; display:grid; grid-template-columns:1.05fr 1fr; gap:36px; align-items:center}
+.hero .lede{color:var(--muted); font-size:1.08rem; max-width:52ch; margin-top:14px}
+.eq{font-family:var(--display); font-size:1.25rem; color:var(--mark); margin-top:18px}
+.doors{display:flex; gap:12px; flex-wrap:wrap; margin-top:24px}
+.btn{display:inline-flex; align-items:center; gap:8px; font:600 .97rem var(--body); padding:10px 18px; border-radius:10px; border:1.5px solid var(--accent); color:var(--accent); background:transparent; cursor:pointer; text-decoration:none}
+.btn.solid{background:var(--accent); color:var(--sheet)}
+.btn:hover{filter:brightness(1.07)}
+.btn.small{padding:6px 12px; font-size:.88rem; border-radius:8px}
+
+/* lab demo */
+.lab{background:var(--sheet); border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:0 10px 30px -18px rgba(21,34,56,.35)}
+.lab-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap}
+.lab-head small{color:var(--muted); font-size:.85rem}
+canvas#track{width:100%; height:120px; display:block; margin:12px 0 10px; border-radius:8px; background:var(--paper)}
+.lab-controls{display:flex; gap:14px; align-items:center; flex-wrap:wrap}
+.lab-controls label{font-size:.9rem; color:var(--muted)}
+input[type=range]{accent-color:var(--accent); width:120px}
+.readout{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px}
+.readout div{border:1px solid var(--line); border-radius:8px; padding:6px 10px}
+.readout dt{font-size:.75rem; color:var(--muted)}
+.readout dd{margin:0; font-family:var(--mono); font-size:1.05rem}
+.lab-q{margin-top:10px; font-size:.92rem; color:var(--muted)}
+
+/* sections */
+main section.view{display:none; padding-bottom:56px}
+main section.view.active{display:block}
+.sec-head{display:flex; justify-content:space-between; align-items:end; gap:16px; flex-wrap:wrap; padding:34px 0 18px; border-bottom:2px solid var(--ink); margin-bottom:22px}
+.sec-head p{color:var(--muted); max-width:60ch}
+.kicker{font-family:var(--mono); font-size:.8rem; color:var(--mark); letter-spacing:.04em; text-transform:uppercase}
+.classtabs{display:flex; gap:8px; flex-wrap:wrap}
+.classtabs a{font-family:var(--display); font-size:1.15rem; text-decoration:none; color:var(--muted); border:1px solid var(--line); background:var(--sheet); padding:6px 16px; border-radius:10px}
+.classtabs a[aria-current="page"]{color:var(--sheet); background:var(--ink); border-color:var(--ink)}
+
+.cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:16px}
+.card{background:var(--sheet); border:1px solid var(--line); border-radius:12px; padding:18px 18px 16px; display:flex; flex-direction:column; gap:10px}
+.card .num{font-family:var(--mono); font-size:.78rem; color:var(--mark)}
+.card ul{margin:0; padding-left:1.1em}
+.card li{margin:2px 0}
+.formula{font-family:var(--mono); background:var(--accent-soft); color:var(--ink); padding:2px 8px; border-radius:6px; white-space:nowrap}
+.card .actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:auto; padding-top:6px}
+.score{font-family:var(--mono); font-size:.82rem; color:var(--ok)}
+
+/* home */
+.home-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:6px 0 40px}
+.door{background:var(--sheet); border:1px solid var(--line); border-radius:14px; padding:22px; display:flex; flex-direction:column; gap:12px}
+.door ul{margin:0; padding-left:1.1em; color:var(--muted)}
+.door .row{display:flex; gap:8px; flex-wrap:wrap; margin-top:auto}
+
+/* panel (quiz / worksheet) */
+.panel{position:fixed; inset:0; background:rgba(10,16,28,.55); display:none; align-items:flex-start; justify-content:center; padding:24px 16px; overflow-y:auto; z-index:20}
+.panel.open{display:flex}
+.panel-box{background:var(--sheet); color:var(--ink); border-radius:14px; width:min(760px,100%); padding:24px; border:1px solid var(--line)}
+.panel-top{display:flex; justify-content:space-between; gap:12px; align-items:start; margin-bottom:14px}
+.close{background:none; border:1px solid var(--line); color:var(--ink); border-radius:8px; padding:4px 10px; cursor:pointer; font:500 .9rem var(--body)}
+.progress{height:6px; background:var(--accent-soft); border-radius:99px; overflow:hidden; margin:6px 0 18px}
+.progress i{display:block; height:100%; background:var(--accent); width:0; transition:width .25s}
+.q-text{font-size:1.12rem; font-weight:600; margin-bottom:12px}
+.opts{display:grid; gap:8px}
+.opt{text-align:left; font:500 1rem var(--body); color:var(--ink); background:var(--paper); border:1.5px solid var(--line); border-radius:10px; padding:10px 14px; cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.right{background:var(--ok-soft); border-color:var(--ok)}
+.opt.wrong{background:var(--bad-soft); border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.explain{margin-top:12px; padding:10px 14px; border-left:4px solid var(--accent); background:var(--accent-soft); border-radius:6px; display:none}
+.explain.show{display:block}
+.panel-foot{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:18px; flex-wrap:wrap}
+.result-big{font-family:var(--display); font-size:3rem; color:var(--accent)}
+.sheet ol{padding-left:1.3em; margin:10px 0 0}
+.sheet li{margin:0 0 14px}
+.sheet .lines{border-bottom:1px dashed var(--line); height:26px}
+.sheet .meta{display:flex; gap:18px; flex-wrap:wrap; font-size:.92rem; color:var(--muted); border:1px solid var(--line); border-radius:8px; padding:8px 12px; margin:8px 0 6px}
+.toast{font-size:.88rem; color:var(--ok)}
+
+/* teachers */
+.tabs2{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px}
+.tabs2 button{font:600 .95rem var(--body); color:var(--muted); background:var(--sheet); border:1px solid var(--line); border-radius:999px; padding:7px 16px; cursor:pointer}
+.tabs2 button[aria-selected="true"]{color:var(--accent); border-color:var(--accent); background:var(--accent-soft)}
+.tpanel{display:none}
+.tpanel.active{display:block}
+.table-wrap{overflow-x:auto; background:var(--sheet); border:1px solid var(--line); border-radius:12px}
+table{border-collapse:collapse; width:100%; min-width:640px; font-size:.95rem}
+th,td{text-align:left; padding:10px 14px; border-bottom:1px solid var(--line); vertical-align:top}
+th{font-weight:600; color:var(--muted); font-size:.85rem; text-transform:uppercase; letter-spacing:.03em}
+tr:last-child td{border-bottom:none}
+.scenario{background:var(--sheet); border:1px solid var(--line); border-radius:14px; padding:22px; margin-bottom:18px}
+.scen-meta{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 14px}
+.pill{font-size:.8rem; font-weight:600; border-radius:999px; padding:3px 10px; background:var(--accent-soft); color:var(--accent)}
+.pill.warm{background:color-mix(in srgb,var(--mark) 14%,transparent); color:var(--mark)}
+.phases{display:grid; gap:0; border-left:2px solid var(--accent); margin:12px 0 12px 6px}
+.phase{padding:0 0 12px 18px; position:relative}
+.phase::before{content:""; position:absolute; left:-7px; top:6px; width:12px; height:12px; border-radius:50%; background:var(--sheet); border:2px solid var(--accent)}
+.phase > b{font-family:var(--mono); font-weight:500; font-size:.85rem; color:var(--accent)}
+.two{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+.box{border:1px solid var(--line); border-radius:10px; padding:12px 14px}
+.box h4{margin:0 0 6px; font-size:.9rem; color:var(--muted); text-transform:uppercase; letter-spacing:.03em}
+.box ul{margin:0; padding-left:1.1em}
+.tools{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px}
+.tool{background:var(--sheet); border:1px solid var(--line); border-radius:12px; padding:14px 16px}
+.tool a{font-weight:600}
+.tool p{color:var(--muted); font-size:.93rem; margin-top:4px}
+.src{font-size:.82rem; color:var(--muted)}
+.planb{margin-top:12px; padding:8px 12px; border-left:3px solid var(--mark); background:color-mix(in srgb,var(--mark) 8%,transparent); border-radius:6px; font-size:.93rem}
+.refgrid{display:grid; gap:12px}
+.reflist{font-size:.9rem}
+.reflist li{margin-bottom:6px; padding-left:1.4em; text-indent:-1.4em; list-style:none}
+.reflist{padding-left:0 !important}
+
+footer{border-top:1px solid var(--line); padding:22px 0 40px; color:var(--muted); font-size:.9rem}
+footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr; padding-top:28px}
+  .home-grid,.two{grid-template-columns:1fr}
+  nav.main{margin-left:0}
+}
+@media (prefers-reduced-motion: reduce){ .progress i{transition:none} }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#arxiki"><b>Φυσική στο Γυμνάσιο</b><span>υ = Δx / Δt</span></a>
+    <nav class="main" aria-label="Κύρια πλοήγηση">
+      <a href="#arxiki" data-nav="arxiki">Αρχική</a>
+      <a href="#a-gymnasiou" data-nav="mathites">Για μαθητές</a>
+      <a href="#synadelfoi" data-nav="synadelfoi">Για συναδέλφους</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- HOME -->
+  <section class="view" id="view-arxiki">
+    <div class="hero">
+      <div>
+        <div class="kicker">Α΄ · Β΄ · Γ΄ Γυμνασίου</div>
+        <h1>Η Φυσική μαθαίνεται με ερωτήσεις, μετρήσεις και πειράματα.</h1>
+        <p class="lede">Για τους μαθητές υπάρχουν κουίζ που διορθώνονται αμέσως και φύλλα εργασίας ανά ενότητα. Για τους συναδέλφους υπάρχουν σενάρια διερευνητικής μάθησης, οι συχνές παρανοήσεις των μαθητών και εργαλεία ΤΠΕ για την τάξη.</p>
+        <div class="doors">
+          <a class="btn solid" href="#a-gymnasiou">Είμαι μαθητής/τρια</a>
+          <a class="btn" href="#synadelfoi">Είμαι εκπαιδευτικός</a>
+        </div>
+      </div>
+      <div class="lab" aria-labelledby="lab-title">
+        <div class="lab-head">
+          <h3 id="lab-title">Μίνι πείραμα: το καροτσάκι</h3>
+          <small>Β΄ Γυμνασίου · Ταχύτητα</small>
+        </div>
+        <canvas id="track" width="640" height="120" aria-label="Καροτσάκι που κινείται σε ευθεία με κλίμακα σε μέτρα"></canvas>
+        <div class="lab-controls">
+          <label for="speed">Ταχύτητα: <span class="mono" id="speedVal">2,0 m/s</span></label>
+          <input type="range" id="speed" min="0.5" max="5" step="0.5" value="2">
+          <button class="btn small solid" id="labRun" type="button">Ξεκίνα</button>
+          <button class="btn small" id="labReset" type="button">Μηδένισε</button>
+        </div>
+        <dl class="readout">
+          <div><dt>χρόνος t</dt><dd id="rT">0,0 s</dd></div>
+          <div><dt>θέση x</dt><dd id="rX">0,0 m</dd></div>
+          <div><dt>x / t</dt><dd id="rV">—</dd></div>
+        </dl>
+        <p class="lab-q">Ερώτηση: αν διπλασιάσεις την ταχύτητα, σε πόσο χρόνο φτάνει το καροτσάκι στα 10 m;</p>
+      </div>
+    </div>
+
+    <div class="home-grid">
+      <div class="door">
+        <div class="kicker">Για μαθητές</div>
+        <h2>Κουίζ & φύλλα εργασίας</h2>
+        <ul>
+          <li>9 ενότητες, 3 για κάθε τάξη, με τους βασικούς τύπους</li>
+          <li>Κουίζ 5 ερωτήσεων με εξήγηση σε κάθε απάντηση</li>
+          <li>Φύλλα εργασίας με χώρο για λύσεις, για αντιγραφή</li>
+        </ul>
+        <div class="row">
+          <a class="btn small" href="#a-gymnasiou">Α΄ Γυμνασίου</a>
+          <a class="btn small" href="#b-gymnasiou">Β΄ Γυμνασίου</a>
+          <a class="btn small" href="#g-gymnasiou">Γ΄ Γυμνασίου</a>
+        </div>
+      </div>
+      <div class="door">
+        <div class="kicker">Για συναδέλφους</div>
+        <h2>Παιδαγωγικά & σενάρια</h2>
+        <ul>
+          <li>Διερευνητική μάθηση, διαμορφωτική αξιολόγηση, διαφοροποίηση</li>
+          <li>Πίνακας συχνών παρανοήσεων και πώς τις αντιμετωπίζουμε</li>
+          <li>4 σενάρια διερεύνησης σύμφωνα με τις οδηγίες 2026-27, με τεκμηρίωση και Plan B</li>
+        </ul>
+        <div class="row">
+          <a class="btn small" href="#synadelfoi">Παιδαγωγικά θέματα</a>
+          <a class="btn small" href="#senaria">Σενάρια μαθημάτων</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STUDENTS -->
+  <section class="view" id="view-mathites">
+    <div class="sec-head">
+      <div>
+        <div class="kicker">Για μαθητές</div>
+        <h2 id="classTitle">Α΄ Γυμνασίου</h2>
+        <p id="classIntro"></p>
+      </div>
+      <nav class="classtabs" aria-label="Τάξη">
+        <a href="#a-gymnasiou" data-class="a">Α΄</a>
+        <a href="#b-gymnasiou" data-class="b">Β΄</a>
+        <a href="#g-gymnasiou" data-class="g">Γ΄</a>
+      </nav>
+    </div>
+    <div class="cards" id="topicCards"></div>
+  </section>
+
+  <!-- TEACHERS -->
+  <section class="view" id="view-synadelfoi">
+    <div class="sec-head">
+      <div>
+        <div class="kicker">Για συναδέλφους</div>
+        <h2>Παιδαγωγικά θέματα & σενάρια</h2>
+        <p>Υλικό για τον σχεδιασμό του μαθήματος της Φυσικής στο Γυμνάσιο, με έμφαση στη διερεύνηση, στην αξιολόγηση κατά τη διάρκεια της μάθησης και στις ΤΠΕ.</p>
+      </div>
+    </div>
+    <div class="tabs2" role="tablist" aria-label="Ενότητες για εκπαιδευτικούς">
+      <button role="tab" id="t-ped" aria-selected="true" aria-controls="p-ped">Παιδαγωγικά</button>
+      <button role="tab" id="t-mis" aria-selected="false" aria-controls="p-mis">Παρανοήσεις</button>
+      <button role="tab" id="t-sce" aria-selected="false" aria-controls="p-sce">Σενάρια διερεύνησης</button>
+      <button role="tab" id="t-tpe" aria-selected="false" aria-controls="p-tpe">Εργαλεία ΤΠΕ</button>
+      <button role="tab" id="t-ref" aria-selected="false" aria-controls="p-ref">Πηγές & έλεγχος</button>
+    </div>
+
+    <div class="tpanel active" id="p-ped" role="tabpanel" aria-labelledby="t-ped">
+      <div class="cards" id="pedCards"></div>
+    </div>
+
+    <div class="tpanel" id="p-mis" role="tabpanel" aria-labelledby="t-mis">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Τάξη</th><th>Τι πιστεύουν συχνά οι μαθητές</th><th>Τι ισχύει</th><th>Δραστηριότητα που βοηθά</th></tr></thead>
+          <tbody id="misBody"></tbody>
+        </table>
+      </div>
+      <p class="src" style="margin-top:10px">Τεκμηρίωση: Driver et al. (1994) · Posner et al. (1982). Η αξιοποίηση της πρόβλεψης πριν από το πείραμα: Brod, Hasselhorn & Bunge (2018).</p>
+    </div>
+
+    <div class="tpanel" id="p-sce" role="tabpanel" aria-labelledby="t-sce">
+      <div id="scenarios"></div>
+    </div>
+
+    <div class="tpanel" id="p-tpe" role="tabpanel" aria-labelledby="t-tpe">
+      <div class="tools" id="tools"></div>
+    </div>
+
+    <div class="tpanel" id="p-ref" role="tabpanel" aria-labelledby="t-ref">
+      <h3 style="margin-bottom:10px">Τριπλός έλεγχος του υλικού</h3>
+      <p class="src" style="margin-bottom:12px">Κάθε ρόλος έλεγξε το υλικό ξεχωριστά. Οι διορθώσεις που προέκυψαν έχουν ήδη γίνει· όσα μένουν ανοιχτά φαίνονται στην τρίτη στήλη.</p>
+      <div class="table-wrap" style="margin-bottom:22px">
+        <table>
+          <thead><tr><th>Ρόλος</th><th>Τι ελέγχθηκε και τι διορθώθηκε</th><th>Ανοιχτά ζητήματα</th><th>Ετυμηγορία</th></tr></thead>
+          <tbody id="revBody"></tbody>
+        </table>
+      </div>
+      <h3 style="margin-bottom:10px">Βιβλιογραφία (APA 7)</h3>
+      <div class="refgrid" id="refs"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Φυσική στο Γυμνάσιο · Επιμέλεια: Αγγελική-Μαρία Μπάλλιου, Φυσικός ΠΕ04.01</span>
+    <span>Η ύλη ακολουθεί τις οδηγίες διδασκαλίας Φυσικής Γυμνασίου 2026-27 (εγκ. 111919/Δ2/2026).</span>
+  </div>
+</footer>
+
+<!-- Quiz / worksheet dialog -->
+<div class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="panelTitle">
+  <div class="panel-box">
+    <div class="panel-top">
+      <div>
+        <div class="kicker" id="panelKicker">Κουίζ</div>
+        <h3 id="panelTitle"></h3>
+      </div>
+      <button class="close" id="panelClose" type="button">Κλείσιμο</button>
+    </div>
+    <div id="panelBody"></div>
+  </div>
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const CLASSES = {
+  a:{title:"Α΄ Γυμνασίου", intro:"Μετράμε τον κόσμο: μήκος, όγκος, πυκνότητα, θερμοκρασία. Ενότητες από το βιβλίο «Η Φυσική με πειράματα».", topics:[
+    {id:"a1", name:"Μετρήσεις και μονάδες", keys:["Μονάδες SI: μήκος σε <span class='formula'>m</span>, μάζα σε <span class='formula'>kg</span>, χρόνος σε <span class='formula'>s</span>","<span class='formula'>1 L = 1 dm³ = 1000 cm³</span>","Πολλές μετρήσεις και μέση τιμή για καλύτερη ακρίβεια"],
+     quiz:[
+      {q:"Ποια είναι η μονάδα μάζας στο Διεθνές Σύστημα (SI);", o:["το γραμμάριο (g)","το χιλιόγραμμο (kg)","το νιούτον (N)","το λίτρο (L)"], a:1, e:"Η θεμελιώδης μονάδα μάζας στο SI είναι το kg. Το N είναι μονάδα δύναμης."},
+      {q:"Πόσα μέτρα είναι 2,5 km;", o:["25 m","250 m","2500 m","25000 m"], a:2, e:"1 km = 1000 m, άρα 2,5 km = 2,5 × 1000 = 2500 m."},
+      {q:"Πόσα cm³ χωράει ένα μπουκάλι 1,5 L;", o:["15 cm³","150 cm³","1500 cm³","15000 cm³"], a:2, e:"1 L = 1000 cm³, άρα 1,5 L = 1500 cm³."},
+      {q:"Πώς βρίσκουμε τον όγκο μιας πέτρας με ακανόνιστο σχήμα;", o:["Με χάρακα","Τη ζυγίζουμε","Τη βυθίζουμε σε ογκομετρικό κύλινδρο με νερό και μετράμε την άνοδο της στάθμης","Δεν γίνεται να μετρηθεί"], a:2, e:"Ο όγκος του νερού που εκτοπίζεται είναι ίσος με τον όγκο της πέτρας."},
+      {q:"Μετράς πέντε φορές τον χρόνο πτώσης ενός μπαλακιού. Τι κάνεις με τις τιμές;", o:["Κρατάς τη μεγαλύτερη","Κρατάς την πρώτη","Υπολογίζεις τη μέση τιμή","Κρατάς τη μικρότερη"], a:2, e:"Η μέση τιμή μειώνει την επίδραση των τυχαίων σφαλμάτων μέτρησης."}],
+     sheet:["Μετάτρεψε: 3,2 m σε cm · 450 g σε kg · 2 h σε s.","Μέτρησε το μήκος του θρανίου σου 3 φορές με μετροταινία. Γράψε τις τιμές και υπολόγισε τη μέση τιμή.","Περίγραψε, με βήματα, πώς θα μετρήσεις τον όγκο ενός κλειδιού με ογκομετρικό κύλινδρο.","Γιατί δύο μαθητές που μετρούν το ίδιο αντικείμενο μπορεί να βρουν λίγο διαφορετικές τιμές;"]},
+    {id:"a2", name:"Πυκνότητα", keys:["<span class='formula'>ρ = m / V</span>","Νερό: <span class='formula'>1 g/cm³ = 1000 kg/m³</span>","Σώμα με ρ μικρότερη από του νερού επιπλέει"],
+     quiz:[
+      {q:"Ένας κύβος έχει μάζα 16 g και όγκο 8 cm³. Ποια είναι η πυκνότητά του;", o:["0,5 g/cm³","2 g/cm³","8 g/cm³","128 g/cm³"], a:1, e:"ρ = m / V = 16 g / 8 cm³ = 2 g/cm³."},
+      {q:"Κόβουμε τον κύβο στη μέση. Τι παθαίνει η πυκνότητα κάθε κομματιού;", o:["Γίνεται μισή","Διπλασιάζεται","Μένει ίδια","Μηδενίζεται"], a:2, e:"Μάζα και όγκος υποδιπλασιάζονται μαζί, άρα το πηλίκο m/V δεν αλλάζει. Η πυκνότητα εξαρτάται από το υλικό."},
+      {q:"Ποια είναι η πυκνότητα του νερού;", o:["1 g/cm³","10 g/cm³","0,1 g/cm³","100 g/cm³"], a:0, e:"Το νερό έχει πυκνότητα περίπου 1 g/cm³, δηλαδή 1000 kg/m³."},
+      {q:"Ένα ξύλο με πυκνότητα 0,6 g/cm³ μπαίνει στο νερό. Τι θα συμβεί;", o:["Θα βυθιστεί","Θα επιπλεύσει","Θα αιωρείται στη μέση","Θα διαλυθεί"], a:1, e:"Η πυκνότητά του είναι μικρότερη από του νερού, άρα επιπλέει."},
+      {q:"Τι έχει μεγαλύτερη μάζα: 1 kg πούπουλα ή 1 kg σίδερο;", o:["Τα πούπουλα","Το σίδερο","Έχουν την ίδια μάζα","Εξαρτάται από τον όγκο"], a:2, e:"Και τα δύο έχουν μάζα 1 kg. Διαφέρουν στον όγκο, άρα και στην πυκνότητα."}],
+     sheet:["Ένα μεταλλικό κομμάτι έχει μάζα 270 g και όγκο 100 cm³. Υπολόγισε την πυκνότητά του.","Συμπλήρωσε τον πίνακα για τρία αντικείμενα της τάξης: μάζα (g), όγκος (cm³), πυκνότητα (g/cm³).","Πρόβλεψε αν ένα κερί (ρ ≈ 0,9 g/cm³) θα επιπλεύσει στο νερό. Εξήγησε.","Γιατί ένα σιδερένιο πλοίο επιπλέει, ενώ ένα σιδερένιο καρφί βυθίζεται;"]},
+    {id:"a3", name:"Θερμοκρασία και θερμότητα", keys:["Θερμοκρασία: πόσο ζεστό ή κρύο είναι ένα σώμα (°C)","Βαθμονόμηση: <span class='formula'>0 °C</span> πάγος που λιώνει, <span class='formula'>100 °C</span> νερό που βράζει","Θερμότητα: ενέργεια που ρέει από το θερμό στο ψυχρό σώμα"],
+     quiz:[
+      {q:"Σε ποια θερμοκρασία βράζει το καθαρό νερό στην επιφάνεια της θάλασσας;", o:["0 °C","37 °C","100 °C","273 °C"], a:2, e:"Σε κανονική ατμοσφαιρική πίεση το νερό βράζει στους 100 °C."},
+      {q:"Ακουμπάς ένα μεταλλικό και ένα ξύλινο αντικείμενο που είναι στην ίδια αίθουσα από χθες. Το μέταλλο μοιάζει πιο κρύο. Ποια έχει μικρότερη θερμοκρασία;", o:["Το μέταλλο","Το ξύλο","Έχουν την ίδια θερμοκρασία","Εξαρτάται από το χρώμα"], a:2, e:"Είναι σε θερμική ισορροπία με την αίθουσα, άρα έχουν ίδια θερμοκρασία. Το μέταλλο παίρνει γρηγορότερα θερμότητα από το χέρι μας, γι' αυτό το νιώθουμε πιο κρύο."},
+      {q:"Βάζουμε ζεστό τσάι σε κρύο φλιτζάνι. Προς τα πού ρέει θερμότητα;", o:["Από το φλιτζάνι στο τσάι","Από το τσάι στο φλιτζάνι","Δεν ρέει θερμότητα","Και προς τις δύο κατευθύνσεις εξίσου"], a:1, e:"Η θερμότητα ρέει πάντα από το σώμα με υψηλότερη θερμοκρασία προς το σώμα με χαμηλότερη."},
+      {q:"Πότε σταματά η ροή θερμότητας ανάμεσα σε δύο σώματα που ακουμπούν;", o:["Όταν έχουν την ίδια μάζα","Όταν αποκτήσουν την ίδια θερμοκρασία","Όταν το ένα παγώσει","Ποτέ"], a:1, e:"Τότε λέμε ότι βρίσκονται σε θερμική ισορροπία."},
+      {q:"Γιατί οι σιδηροτροχιές έχουν μικρά κενά ανάμεσα στα κομμάτια τους;", o:["Για να φεύγει το νερό της βροχής","Για τη θερμική διαστολή το καλοκαίρι","Για να είναι φθηνότερες","Για να ακούγεται το τρένο"], a:1, e:"Με τη ζέστη τα μέταλλα διαστέλλονται. Τα κενά αφήνουν χώρο ώστε οι ράγες να μη στραβώνουν."}],
+     sheet:["Πρόβλεψη πριν μετρήσεις: ποιο θα δείξει χαμηλότερη θερμοκρασία, ένα μεταλλικό κουτάλι ή ένα ξύλινο, αν είναι στο ίδιο θρανίο; Μέτρησε με θερμόμετρο και σύγκρινε.","Πώς θα βαθμονομούσες ένα θερμόμετρο που δεν έχει κλίμακα; Γράψε τα βήματα.","Εξήγησε με δικά σου λόγια τη διαφορά θερμοκρασίας και θερμότητας.","Μέτρησε κάθε 2 λεπτά τη θερμοκρασία ζεστού νερού σε ποτήρι για 10 λεπτά. Φτιάξε πίνακα και διάγραμμα θ–t."]}
+  ]},
+  b:{title:"Β΄ Γυμνασίου", intro:"Κινήσεις (κεφ. 2.1–2.2), δυνάμεις (κεφ. 3) και πίεση (κεφ. 4.1–4.5).", topics:[
+    {id:"b1", name:"Κινήσεις και ταχύτητα", keys:["<span class='formula'>υ = Δx / Δt</span>","<span class='formula'>1 m/s = 3,6 km/h</span>","Το κοντέρ δείχνει τη στιγμιαία ταχύτητα"],
+     quiz:[
+      {q:"Ένα αυτοκίνητο διανύει 120 km σε 1,5 h. Ποια είναι η μέση ταχύτητά του;", o:["60 km/h","80 km/h","120 km/h","180 km/h"], a:1, e:"υ = Δx / Δt = 120 km / 1,5 h = 80 km/h."},
+      {q:"Πόσα m/s είναι 72 km/h;", o:["7,2 m/s","20 m/s","36 m/s","259 m/s"], a:1, e:"Διαιρούμε με 3,6: 72 / 3,6 = 20 m/s."},
+      {q:"Τι δείχνει το κοντέρ του αυτοκινήτου;", o:["Τη μέση ταχύτητα της διαδρομής","Τη στιγμιαία ταχύτητα","Την απόσταση από το σπίτι","Την επιτάχυνση"], a:1, e:"Το κοντέρ δείχνει πόσο γρήγορα κινείται το αυτοκίνητο εκείνη τη στιγμή."},
+      {q:"Το διάγραμμα θέσης–χρόνου (x–t) ενός σώματος είναι πλάγια ευθεία γραμμή. Τι κίνηση κάνει;", o:["Είναι ακίνητο","Ευθύγραμμη ομαλή κίνηση","Επιταχυνόμενη κίνηση","Κυκλική κίνηση"], a:1, e:"Η θέση αλλάζει κατά ίσα διαστήματα σε ίσους χρόνους, άρα η ταχύτητα είναι σταθερή."},
+      {q:"Πας από το σπίτι στο σχολείο (500 m) και γυρνάς πίσω. Ποια είναι η μετατόπισή σου;", o:["0 m","500 m","1000 m","250 m"], a:0, e:"Η μετατόπιση είναι η αλλαγή θέσης. Γύρισες στο ίδιο σημείο, άρα Δx = 0. Η απόσταση που διάνυσες είναι 1000 m."}],
+     sheet:["Ένας ποδηλάτης διανύει 6 km σε 20 min. Βρες τη μέση ταχύτητά του σε km/h και σε m/s.","Με χρονόμετρο κινητού μέτρησε τον χρόνο που κάνει ένας συμμαθητής σου να περπατήσει 10 m. Υπολόγισε την ταχύτητα.","Σχεδίασε το διάγραμμα x–t για σώμα που κινείται με 2 m/s για 5 s.","Ποια η διαφορά απόστασης και μετατόπισης; Δώσε παράδειγμα."]},
+    {id:"b2", name:"Δυνάμεις", keys:["Μονάδα δύναμης: <span class='formula'>N</span> (νιούτον)","Βάρος: <span class='formula'>B = m · g</span>, με <span class='formula'>g ≈ 10 m/s²</span>","Δράση–αντίδραση: ίσες, αντίθετες, σε διαφορετικά σώματα"],
+     quiz:[
+      {q:"Ποιο είναι περίπου το βάρος ενός σώματος μάζας 5 kg στη Γη;", o:["5 N","50 N","0,5 N","500 N"], a:1, e:"B = m · g ≈ 5 kg × 10 m/s² = 50 N."},
+      {q:"Ένας αστροναύτης πηγαίνει στη Σελήνη. Τι αλλάζει;", o:["Η μάζα του","Το βάρος του","Και τα δύο","Τίποτα"], a:1, e:"Η μάζα μένει ίδια. Το βάρος μικραίνει γιατί η βαρύτητα στη Σελήνη είναι περίπου το 1/6 της Γης."},
+      {q:"Ένα βιβλίο είναι ακίνητο πάνω στο θρανίο. Τι ισχύει για τις δυνάμεις πάνω του;", o:["Δεν ασκείται καμία δύναμη","Ασκείται μόνο το βάρος","Η συνισταμένη δύναμη είναι μηδέν","Η δύναμη του θρανίου είναι μεγαλύτερη από το βάρος"], a:2, e:"Το βάρος και η δύναμη από το θρανίο είναι ίσες και αντίθετες, άρα η συνισταμένη είναι μηδέν."},
+      {q:"Όταν το λεωφορείο φρενάρει απότομα, οι επιβάτες γέρνουν προς τα εμπρός. Γιατί;", o:["Λόγω αδράνειας","Τους σπρώχνει ο οδηγός","Λόγω του βάρους τους","Λόγω του αέρα"], a:0, e:"Το σώμα τείνει να διατηρεί την κινητική του κατάσταση (1ος νόμος του Νεύτωνα)."},
+      {q:"Δύο δυνάμεις 3 N και 4 N ασκούνται κάθετα η μία στην άλλη. Πόση είναι η συνισταμένη;", o:["1 N","5 N","7 N","12 N"], a:1, e:"Με το Πυθαγόρειο θεώρημα: √(3² + 4²) = √25 = 5 N."}],
+     sheet:["Κρέμασε διαφορετικά βαρίδια σε δυναμόμετρο. Συμπλήρωσε πίνακα μάζας (kg) και ένδειξης (N). Τι παρατηρείς;","Σχεδίασε τις δυνάμεις σε ένα βιβλίο που ηρεμεί πάνω στο θρανίο.","Δώσε δύο παραδείγματα δράσης–αντίδρασης από τα σπορ.","Γιατί είναι πιο εύκολο να σπρώξεις ένα άδειο καρότσι σούπερ μάρκετ απ' ό,τι ένα γεμάτο;"]},
+    {id:"b3", name:"Πίεση", keys:["<span class='formula'>p = F / A</span>, μονάδα <span class='formula'>Pa = N/m²</span>","Υδροστατική πίεση: <span class='formula'>p = ρ · g · h</span>","Άνωση = βάρος του υγρού που εκτοπίζεται (Αρχιμήδης)"],
+     quiz:[
+      {q:"Γιατί τα χιονοπέδιλα βοηθούν να μη βουλιάζουμε στο χιόνι;", o:["Μειώνουν το βάρος μας","Αυξάνουν την επιφάνεια, άρα μειώνεται η πίεση","Αυξάνουν την πίεση","Ζεσταίνουν το χιόνι"], a:1, e:"Ίδια δύναμη (βάρος) σε μεγαλύτερη επιφάνεια δίνει μικρότερη πίεση, αφού p = F / A."},
+      {q:"Ένα κουτί βάρους 200 N ακουμπά σε επιφάνεια 0,5 m². Πόση πίεση ασκεί;", o:["100 Pa","400 Pa","200 Pa","1000 Pa"], a:1, e:"p = F / A = 200 N / 0,5 m² = 400 Pa."},
+      {q:"Πόση είναι περίπου η πίεση από το νερό σε βάθος 10 m (ρ = 1000 kg/m³, g = 10 m/s²);", o:["1000 Pa","10.000 Pa","100.000 Pa","1.000.000 Pa"], a:2, e:"p = ρ · g · h = 1000 × 10 × 10 = 100.000 Pa, περίπου όση και η ατμοσφαιρική πίεση."},
+      {q:"Η πίεση σε ένα υγρό εξαρτάται από:", o:["το σχήμα του δοχείου","το βάθος και την πυκνότητα του υγρού","την ποσότητα του υγρού στο δοχείο","το χρώμα του υγρού"], a:1, e:"Η υδροστατική πίεση εξαρτάται μόνο από το βάθος και την πυκνότητα (και το g)."},
+      {q:"Γιατί ένα σώμα φαίνεται πιο ελαφρύ μέσα στο νερό;", o:["Χάνει μάζα","Δέχεται άνωση προς τα πάνω","Το νερό το ψύχει","Η βαρύτητα μηδενίζεται"], a:1, e:"Το νερό ασκεί άνωση ίση με το βάρος του νερού που εκτοπίζει (αρχή του Αρχιμήδη)."}],
+     sheet:["Υπολόγισε την πίεση που ασκείς στο πάτωμα όρθιος/α (βάρος σου ≈ 500 N, επιφάνεια πελμάτων ≈ 0,04 m²) και όταν στέκεσαι στο ένα πόδι.","Τρύπησε ένα πλαστικό μπουκάλι σε τρία ύψη και γέμισέ το νερό. Πού πετάγεται πιο μακριά το νερό; Εξήγησε.","Ζύγισε μια πέτρα στον αέρα και μέσα στο νερό με δυναμόμετρο. Πόση είναι η άνωση;","Γιατί τα φράγματα είναι πιο φαρδιά στη βάση τους;"]}
+  ]},
+  g:{title:"Γ΄ Γυμνασίου", intro:"Ηλεκτρική δύναμη (κεφ. 1), ηλεκτρικό ρεύμα (κεφ. 2), ταλαντώσεις και κύματα (κεφ. 4–5).", topics:[
+    {id:"g1", name:"Ηλεκτρικό φορτίο και δύναμη", keys:["Ομώνυμα φορτία απωθούνται, ετερώνυμα έλκονται","Μονάδα φορτίου: <span class='formula'>C</span> (κουλόμπ)","Νόμος Coulomb (ποιοτικά): η δύναμη μεγαλώνει με τα φορτία και μικραίνει όσο αυξάνεται η απόσταση"],
+     quiz:[
+      {q:"Δύο αρνητικά φορτισμένα μπαλόνια πλησιάζουν. Τι συμβαίνει;", o:["Έλκονται","Απωθούνται","Τίποτα","Εκφορτίζονται"], a:1, e:"Τα ομώνυμα φορτία απωθούνται."},
+      {q:"Τρίβουμε ένα πλαστικό χάρακα με μάλλινο ύφασμα και φορτίζεται αρνητικά. Τι μεταφέρθηκε;", o:["Πρωτόνια από τον χάρακα στο ύφασμα","Ηλεκτρόνια από το ύφασμα στον χάρακα","Νετρόνια","Θερμότητα"], a:1, e:"Με την τριβή μεταφέρονται ηλεκτρόνια. Ο χάρακας πήρε ηλεκτρόνια, γι' αυτό είναι αρνητικός."},
+      {q:"Ποια είναι η μονάδα του ηλεκτρικού φορτίου στο SI;", o:["το βολτ (V)","το αμπέρ (A)","το κουλόμπ (C)","το ωμ (Ω)"], a:2, e:"Το φορτίο μετριέται σε κουλόμπ (C)."},
+      {q:"Απομακρύνουμε δύο φορτισμένα μπαλόνια το ένα από το άλλο. Τι παθαίνει η ηλεκτρική δύναμη ανάμεσά τους;", o:["Μεγαλώνει","Μικραίνει","Μένει ίδια","Αλλάζει φορά"], a:1, e:"Όσο μεγαλώνει η απόσταση, τόσο μικραίνει η ηλεκτρική δύναμη (νόμος του Coulomb)."},
+      {q:"Τι λέει η αρχή διατήρησης του φορτίου;", o:["Το φορτίο δημιουργείται με την τριβή","Το συνολικό φορτίο ενός απομονωμένου συστήματος μένει σταθερό","Τα φορτία πάντα εξαφανίζονται","Μόνο τα μέταλλα έχουν φορτίο"], a:1, e:"Το φορτίο δεν δημιουργείται ούτε χάνεται. Απλώς μεταφέρεται από σώμα σε σώμα."}],
+     sheet:["Τρίψε ένα μπαλόνι στα μαλλιά σου και πλησίασέ το σε κομματάκια χαρτιού. Περίγραψε τι βλέπεις και εξήγησε.","Σχεδίασε δύο φορτία (+ και −) και τις δυνάμεις που ασκεί το ένα στο άλλο.","Πρόβλεψη: αν πλησιάσεις σιγά σιγά το φορτισμένο μπαλόνι στα χαρτάκια, από ποια απόσταση θα αρχίσουν να κινούνται; Δοκίμασε και εξήγησε τι δείχνει αυτό για τη δύναμη και την απόσταση.","Γιατί τα φορτηγά που μεταφέρουν καύσιμα έχουν αλυσίδα που ακουμπά στο έδαφος;"]},
+    {id:"g2", name:"Ηλεκτρικό ρεύμα", keys:["<span class='formula'>I = q / t</span>, μονάδα <span class='formula'>A</span>","Νόμος του Ohm: <span class='formula'>V = I · R</span>","Αντιστάτες σε σειρά: <span class='formula'>R = R₁ + R₂</span>"],
+     quiz:[
+      {q:"Ένας αντιστάτης 4 Ω συνδέεται σε τάση 12 V. Πόσο ρεύμα τον διαρρέει;", o:["48 A","3 A","0,33 A","16 A"], a:1, e:"I = V / R = 12 V / 4 Ω = 3 A."},
+      {q:"Πώς συνδέουμε το αμπερόμετρο σε ένα κύκλωμα;", o:["Παράλληλα","Σε σειρά","Δεν έχει σημασία","Μόνο στη μπαταρία"], a:1, e:"Το αμπερόμετρο μπαίνει σε σειρά, για να περνά από μέσα του όλο το ρεύμα."},
+      {q:"Πώς συνδέουμε το βολτόμετρο;", o:["Σε σειρά","Παράλληλα με το στοιχείο που μετράμε","Ανάμεσα σε δύο μπαταρίες","Οπουδήποτε"], a:1, e:"Το βολτόμετρο μετρά διαφορά δυναμικού ανάμεσα σε δύο σημεία, γι' αυτό μπαίνει παράλληλα."},
+      {q:"Δύο αντιστάτες 3 Ω και 5 Ω συνδέονται σε σειρά. Πόση είναι η ολική αντίσταση;", o:["2 Ω","8 Ω","15 Ω","1,9 Ω"], a:1, e:"Σε σειρά οι αντιστάσεις προστίθενται: 3 + 5 = 8 Ω."},
+      {q:"Από αγωγό περνά φορτίο 10 C σε 5 s. Πόση είναι η ένταση του ρεύματος;", o:["50 A","2 A","0,5 A","15 A"], a:1, e:"I = q / t = 10 C / 5 s = 2 A."}],
+     sheet:["Σχεδίασε κύκλωμα με μπαταρία, διακόπτη, λαμπάκι, αμπερόμετρο και βολτόμετρο στις σωστές θέσεις.","Με την προσομοίωση «Κατασκευή κυκλωμάτων» του PhET μέτρησε V και I για 4 τιμές τάσης. Φτιάξε διάγραμμα V–I και βρες την R.","Ένα λαμπάκι διαρρέεται από 0,5 A σε τάση 6 V. Πόση είναι η αντίστασή του;","Γιατί στο σπίτι οι συσκευές συνδέονται παράλληλα και όχι σε σειρά;"]},
+    {id:"g3", name:"Ταλαντώσεις και κύματα", keys:["Συχνότητα: <span class='formula'>f = 1 / T</span>, μονάδα <span class='formula'>Hz</span>","Θεμελιώδης εξίσωση: <span class='formula'>υ = λ · f</span>","Ήχος στον αέρα: περίπου <span class='formula'>340 m/s</span>"],
+     quiz:[
+      {q:"Ένα εκκρεμές κάνει μία πλήρη ταλάντωση σε 0,5 s. Ποια είναι η συχνότητά του;", o:["0,5 Hz","2 Hz","5 Hz","50 Hz"], a:1, e:"f = 1 / T = 1 / 0,5 s = 2 Hz."},
+      {q:"Ήχος συχνότητας 170 Hz διαδίδεται στον αέρα με 340 m/s. Πόσο είναι το μήκος κύματος;", o:["0,5 m","2 m","170 m","57.800 m"], a:1, e:"λ = υ / f = 340 / 170 = 2 m."},
+      {q:"Διαδίδεται ο ήχος στο κενό;", o:["Ναι, πιο γρήγορα","Ναι, πιο αργά","Όχι, χρειάζεται υλικό μέσο","Μόνο τη νύχτα"], a:2, e:"Ο ήχος είναι μηχανικό κύμα και χρειάζεται υλικό μέσο για να διαδοθεί."},
+      {q:"Τι είδους κύμα είναι ο ήχος στον αέρα;", o:["Εγκάρσιο","Διάμηκες","Ηλεκτρομαγνητικό","Στάσιμο πάντα"], a:1, e:"Τα μόρια του αέρα ταλαντώνονται στη διεύθυνση διάδοσης, άρα το κύμα είναι διάμηκες."},
+      {q:"Βλέπουμε την αστραπή πριν ακούσουμε τη βροντή. Γιατί;", o:["Η βροντή γίνεται αργότερα","Το φως διαδίδεται πολύ πιο γρήγορα από τον ήχο","Ο ήχος εμποδίζεται από τα σύννεφα","Τα μάτια αντιδρούν πιο γρήγορα"], a:1, e:"Το φως ταξιδεύει με περίπου 300.000 km/s, ενώ ο ήχος με περίπου 340 m/s."}],
+     sheet:["Μέτρησε τον χρόνο για 10 ταλαντώσεις ενός εκκρεμούς. Βρες την περίοδο και τη συχνότητα.","Πρόβλεψη: αν κρεμάσεις διπλάσια μάζα στο ίδιο νήμα, η περίοδος θα αλλάξει; Μέτρησε. Μετά άλλαξε μόνο το μήκος του νήματος και συμπλήρωσε πίνακα.","Μετράς 3 s ανάμεσα σε αστραπή και βροντή. Πόσο μακριά είναι η καταιγίδα;","Εξήγησε με σχήμα τη διαφορά εγκάρσιου και διαμήκους κύματος (χρησιμοποίησε ένα «σλίνκι»)."]}
+  ]}
+};
+
+const PEDAGOGY = [
+  {k:"01", t:"Διερευνητική μάθηση με καθοδήγηση", p:"Οι μαθητές ξεκινούν από ένα ερώτημα, κάνουν πρόβλεψη και τη δοκιμάζουν με πείραμα πριν από τη θεωρία. Η διερεύνηση αποδίδει όταν υπάρχει καθοδήγηση· η ακαθοδήγητη ανακάλυψη υπερφορτώνει τους αρχάριους.", li:["<b>Προσανατολισμός:</b> φαινόμενο-έκπληξη με γραπτή πρόβλεψη","<b>Εννοιολόγηση:</b> ερώτημα, υπόθεση, μεταβλητές","<b>Διερεύνηση:</b> πείραμα σε ομάδες, πίνακας και γράφημα","<b>Συμπέρασμα:</b> ισχυρισμός–τεκμήριο–αιτιολόγηση","<b>Συζήτηση:</b> τι άλλαξε στη σκέψη μου; εισιτήριο εξόδου"], src:"Pedaste et al. (2015) · Bybee et al. (2006) · Lazonder & Harmsen (2016) · Kirschner, Sweller & Clark (2006)"},
+  {k:"02", t:"Διαμορφωτική αξιολόγηση", p:"Σύντομοι έλεγχοι μέσα στο μάθημα δείχνουν τι κατάλαβαν οι μαθητές, ενώ υπάρχει ακόμη χρόνος να αλλάξουμε πορεία.", li:["Εισιτήριο εξόδου 3 ερωτήσεων στο τέλος της ώρας","Ερωτήσεις κατανόησης με επιλογές που αποκαλύπτουν παρανοήσεις, ατομική ψήφος, συζήτηση σε ζευγάρια, νέα ψήφος","Ανώνυμη ψηφοφορία (Plickers) πριν από τη συζήτηση στην ολομέλεια","Σχόλια που λένε τι να κάνει ο μαθητής στη συνέχεια, όχι μόνο βαθμός"], src:"Black & Wiliam (1998) · Crouch & Mazur (2001)"},
+  {k:"03", t:"Διαφοροποίηση και καθολικός σχεδιασμός", p:"Ίδιος στόχος για όλους, διαφορετικοί δρόμοι για να φτάσουν σε αυτόν. Πολλαπλές αναπαραστάσεις για όλους, όχι αντιστοίχιση σε «μαθησιακά στυλ», που δεν τεκμηριώνεται.", li:["Φύλλα εργασίας σε δύο επίπεδα: βασικό και πρόκληση","Κάρτες βοήθειας Α/Β/Γ με τύπο, λυμένο παράδειγμα και υπόδειξη","Μικτές ομάδες με ρόλους: συντονιστής, μετρητής, γραμματέας, υπεύθυνος υλικών","Επιλογή τρόπου παρουσίασης: πόστερ, σύντομο βίντεο, προφορικά"], src:"Tomlinson (2014) · CAST (2024) · Mayer (2020) · Pashler et al. (2008)"},
+  {k:"04", t:"Η εργασία στο εργαστήριο", p:"Το πείραμα έχει νόημα όταν οι μαθητές ξέρουν τι ψάχνουν και γιατί μετρούν. Οι οδηγίες 2026-27 ζητούν πειράματα επίδειξης με δεδομένα που αναλύουν οι μαθητές, αντί για διάλεξη.", li:["Ερώτημα και πρόβλεψη γραμμένα πριν από τη μέτρηση","Έλεγχος μεταβλητών: τι αλλάζω, τι μετρώ, τι κρατώ σταθερό","Πίνακας τιμών με μονάδες στην κεφαλίδα, μέση τιμή","Μέτρα ασφάλειας σύμφωνα με τον Εργαστηριακό Οδηγό και το ΕΚΦΕ"], src:"ΥΠΑΙΘΑ, εγκ. 111919/Δ2/2026 · Minner, Levy & Century (2010)"},
+  {k:"05", t:"Εναλλακτικές ιδέες και εννοιολογική αλλαγή", p:"Οι μαθητές έρχονται με δικές τους ιδέες για τον κόσμο. Τις φέρνουμε στην επιφάνεια, τις βάζουμε σε δοκιμασία με ένα πείραμα και χτίζουμε τη νέα έννοια.", li:["Διαγνωστική ερώτηση ή εικονογραφημένος διάλογος στην αρχή","Γνωστική σύγκρουση: πείραμα που διαψεύδει την πρόβλεψη","Η νέα έννοια πρέπει να είναι κατανοητή, εύλογη και χρήσιμη","Δες τον πίνακα «Παρανοήσεις» για κάθε τάξη"], src:"Posner et al. (1982) · Driver et al. (1994) · Keogh & Naylor (1999)"},
+  {k:"06", t:"Μάθηση και εγκέφαλος των εφήβων", p:"Μερικά καλά τεκμηριωμένα ευρήματα μεταφράζονται απευθείας σε διδακτικές αποφάσεις.", li:["<b>Πρόβλεψη πριν από την έκπληξη:</b> η έκπληξη βοηθά τη μάθηση όταν ο μαθητής έχει δεσμευτεί σε πρόβλεψη","<b>Ανάκληση και διασπορά:</b> 3 ερωτήσεις από το προηγούμενο μάθημα, επανάληψη σε εβδομάδες","<b>Κοινωνικός εγκέφαλος:</b> ομαδική δουλειά, κανένας δημόσιος εξευτελισμός για το λάθος","<b>Εκτελεστικές λειτουργίες σε ωρίμανση:</b> βήματα στο φύλλο, χρονόμετρο στην οθόνη, ρόλοι"], src:"Brod, Hasselhorn & Bunge (2018) · Roediger & Karpicke (2006) · Cepeda et al. (2006) · Blakemore (2008) · Casey, Jones & Hare (2008)"}
+];
+
+const MISCONCEPTIONS = [
+  ["Α΄","Τα βαριά σώματα επιπλέουν λιγότερο από τα ελαφριά.","Επιπλέει ό,τι έχει μικρότερη πυκνότητα από το υγρό, όχι ό,τι είναι ελαφρύ.","Ζύγισε και βύθισε ένα μεγάλο κομμάτι ξύλο και ένα μικρό μεταλλικό παξιμάδι."],
+  ["Α΄","Η θερμότητα και η θερμοκρασία είναι το ίδιο πράγμα.","Η θερμοκρασία δείχνει πόσο ζεστό είναι ένα σώμα. Η θερμότητα είναι ενέργεια που μεταφέρεται.","Ανάμειξε ίσες ποσότητες ζεστού και κρύου νερού και μέτρησε την τελική θερμοκρασία."],
+  ["Β΄","Για να κινείται ένα σώμα, πρέπει να ασκείται συνέχεια δύναμη.","Χωρίς τριβές ένα σώμα συνεχίζει να κινείται με σταθερή ταχύτητα (αδράνεια).","Αμαξάκι σε λείο και σε τραχύ δάπεδο· προσομοίωση PhET «Δυνάμεις και κίνηση»."],
+  ["Β΄","Μάζα και βάρος είναι το ίδιο.","Η μάζα δεν αλλάζει. Το βάρος είναι δύναμη που εξαρτάται από τη βαρύτητα.","Σύγκριση βάρους ενός σώματος στη Γη και στη Σελήνη με B = m · g."],
+  ["Β΄","Τα βαριά σώματα πέφτουν πιο γρήγορα.","Χωρίς αντίσταση αέρα όλα πέφτουν με την ίδια επιτάχυνση.","Άφησε ταυτόχρονα ένα βιβλίο και ένα φύλλο χαρτί πάνω στο βιβλίο."],
+  ["Γ΄","Το ρεύμα «καταναλώνεται» στο λαμπάκι.","Το ρεύμα είναι ίδιο πριν και μετά το λαμπάκι. Καταναλώνεται ενέργεια.","Αμπερόμετρα πριν και μετά τον αντιστάτη σε κύκλωμα σειράς."],
+  ["Γ΄","Η μπαταρία δίνει πάντα το ίδιο ρεύμα.","Η μπαταρία δίνει τάση. Το ρεύμα εξαρτάται από την αντίσταση του κυκλώματος.","Ίδια μπαταρία με ένα και με δύο λαμπάκια σε σειρά."],
+  ["Γ΄","Η περίοδος του εκκρεμούς εξαρτάται από τη μάζα.","Για μικρές γωνίες η περίοδος εξαρτάται από το μήκος του νήματος, όχι από τη μάζα.","Δύο εκκρεμή ίδιου μήκους με διαφορετική μάζα: πρόβλεψη, μετά μέτρηση 10 ταλαντώσεων."],
+  ["Γ΄","Στα κύματα ταξιδεύει η ύλη.","Ταξιδεύει ενέργεια· τα σωματίδια ταλαντώνονται γύρω από τη θέση τους.","Φελλός πάνω σε νερό με κυματάκια· κορδέλα δεμένη σε σλίνκι."],
+  ["Γ΄","Ο ήχος ταξιδεύει και στο κενό.","Ο ήχος χρειάζεται υλικό μέσο.","Κουδούνι σε δοχείο από το οποίο αφαιρείται αέρας (βίντεο ή αντλία κενού του ΕΚΦΕ)."]
+];
+
+const SCENARIOS = [
+  {cls:"Α΄ Γυμνασίου", title:"Βουλιάζει ή επιπλέει;", topic:"Ενότητα 5 · Πυκνότητα (4 ώρες κατά τις οδηγίες)", dur:"2 διδακτικές ώρες", level:"Καθοδηγούμενη διερεύνηση", tech:"Ομαδοσυνεργατική με ρόλους · Προβλέπω–Παρατηρώ–Εξηγώ", q:"Από τι εξαρτάται αν ένα σώμα θα επιπλεύσει στο νερό;",
+   phases:[
+    ["Προσανατολισμός · 10′","Έκπληξη: κουτάκι αναψυκτικού κανονικό και κουτάκι χωρίς ζάχαρη σε δοχείο με νερό. <b>Πρώτα</b> κάθε μαθητής γράφει πρόβλεψη. Το ένα βυθίζεται, το άλλο επιπλέει."],
+    ["Εννοιολόγηση · 10′","Οι ομάδες διατυπώνουν υπόθεση (μάζα; όγκος; υλικό;) και αποφασίζουν τι θα μετρήσουν."],
+    ["Διερεύνηση · 30′","Ζυγίζουν 5 αντικείμενα, μετρούν όγκο με ογκομετρικό κύλινδρο (Εργ. Οδηγός Β΄, άσκ. 3–4), προβλέπουν και ελέγχουν αν επιπλέουν. Πίνακας m, V, ρ."],
+    ["Συμπέρασμα · 20′","Υπολογίζουν ρ = m / V, συγκρίνουν με το 1 g/cm³ του νερού και γράφουν ισχυρισμό–τεκμήριο–αιτιολόγηση."],
+    ["Συζήτηση · 10′","Επιστροφή στα κουτάκια: η ζάχαρη αλλάζει την πυκνότητα. Εισιτήριο εξόδου (τα πούπουλα και το σίδερο)."]],
+   mat:["Ζυγαριά ακριβείας","Ογκομετρικός κύλινδρος 250 mL","Ξύλο, κερί, παξιμάδι, πλαστελίνη, φελλός","2 κουτάκια αναψυκτικού, δοχείο με νερό"],
+   ict:["PhET «Πυκνότητα» για τον έλεγχο των προβλέψεων","Λογιστικό φύλλο για τον πίνακα τιμών"],
+   planB:"Χωρίς εργαστήριο: πείραμα επίδειξης με τα κουτάκια και έτοιμος πίνακας μετρήσεων για ανάλυση στην τάξη.",
+   src:"Brod et al. (2018) · Posner et al. (1982) · Johnson & Johnson (2009)"},
+  {cls:"Β΄ Γυμνασίου", title:"Ποιος πάει πιο γρήγορα;", topic:"Κεφ. 2.2 · Η έννοια της ταχύτητας (χωρίς διανυσματική)", dur:"2 διδακτικές ώρες", level:"Καθοδηγούμενη διερεύνηση", tech:"Peer Instruction · Ανάλυση βίντεο", q:"Πώς συγκρίνουμε δίκαια πόσο γρήγορα κινούνται δύο σώματα;",
+   phases:[
+    ["Προσανατολισμός · 10′","Έκπληξη στην ψηφοφορία: αυτοκίνητο με 50 km/h ή ποδηλάτης με 14 m/s; Ατομική ψήφος στο Plickers. Αποδεικνύεται ότι πάνε σχεδόν το ίδιο (14 m/s ≈ 50,4 km/h)."],
+    ["Εννοιολόγηση · 10′","Τι πρέπει να μετρήσουμε για να συγκρίνουμε; Οι ομάδες ορίζουν απόσταση και χρόνο ως μεταβλητές."],
+    ["Διερεύνηση · 30′","Στην αυλή: διαδρομή 20 m με σημάδια ανά 5 m. Χρονομέτρηση με κινητά, περπάτημα και τρέξιμο. Πίνακας x–t (Εργ. Οδηγός, άσκ. 6)."],
+    ["Συμπέρασμα · 20′","Υπολογισμός υ = Δx / Δt, μετατροπή km/h ↔ m/s, διάγραμμα x–t. Σύγκριση με το καροτσάκι της αρχικής σελίδας."],
+    ["Συζήτηση · 10′","Δεύτερη ψήφος στην ίδια ερώτηση και εισιτήριο εξόδου (κοντέρ και μέση ταχύτητα)."]],
+   mat:["Μετροταινία 20 m","Κιμωλίες ή κώνοι","Κινητά ως χρονόμετρα"],
+   ict:["Plickers για ανώνυμη ψηφοφορία","Tracker για ανάλυση βίντεο (επέκταση)","Το μίνι πείραμα της αρχικής σελίδας"],
+   planB:"Βροχή ή χωρίς αυλή: το μίνι πείραμα της σελίδας στην οθόνη αφής και έτοιμα δεδομένα χρονομέτρησης.",
+   src:"Crouch & Mazur (2001) · Brod et al. (2018) · Black & Wiliam (1998)"},
+  {cls:"Γ΄ Γυμνασίου", title:"Πώς σχετίζονται τάση και ρεύμα;", topic:"Κεφ. 2 · Νόμος του Ohm (με έμφαση εργαστηριακά)", dur:"2 διδακτικές ώρες", level:"Καθοδηγούμενη διερεύνηση", tech:"Ομαδοσυνεργατική · Πραγματικό και εικονικό εργαστήριο", q:"Αν αυξήσουμε την τάση σε έναν αντιστάτη, τι παθαίνει το ρεύμα;",
+   phases:[
+    ["Προσανατολισμός · 10′","Έκπληξη: προβλέπουν γραπτά αν δύο λαμπάκια σε σειρά θα φωτίζουν περισσότερο ή λιγότερο από ένα. Φωτίζουν λιγότερο."],
+    ["Εννοιολόγηση · 10′","Ερώτημα και υπόθεση: ανεξάρτητη μεταβλητή η τάση, εξαρτημένη το ρεύμα, σταθερός ο αντιστάτης."],
+    ["Διερεύνηση · 30′","Κύκλωμα με τροφοδοτικό χαμηλής τάσης, αντιστάτη, αμπερόμετρο σε σειρά και βολτόμετρο παράλληλα. 5 μετρήσεις V και I."],
+    ["Συμπέρασμα · 20′","Διάγραμμα V–I: ευθεία από την αρχή των αξόνων. Το πηλίκο V / I δίνει την αντίσταση R."],
+    ["Συζήτηση · 10′","Στο PhET δοκιμάζουν δύο αντιστάτες σε σειρά. Εισιτήριο εξόδου: πού μπαίνει το αμπερόμετρο; υπολογισμός I = V / R."]],
+   mat:["Τροφοδοτικό χαμηλής τάσης","Αντιστάτες 10 Ω και 22 Ω","Πολύμετρα","Καλώδια με κροκοδειλάκια"],
+   ict:["PhET «Κατασκευή κυκλωμάτων: DC»","Λογιστικό φύλλο για το διάγραμμα V–I"],
+   planB:"Χωρίς όργανα: όλη η διερεύνηση στο PhET, με τα ίδια φύλλα εργασίας.",
+   src:"Rutten, van Joolingen & van der Veen (2012) · Wieman, Adams & Perkins (2008) · Driver et al. (1994)"},
+  {cls:"Γ΄ Γυμνασίου", title:"Από τι εξαρτάται ο χτύπος του εκκρεμούς;", topic:"Κεφ. 4 · Ταλαντώσεις (διερεύνηση εκκρεμούς από τους μαθητές)", dur:"2 διδακτικές ώρες", level:"Καθοδηγούμενη προς ανοιχτή διερεύνηση", tech:"Ομαδοσυνεργατική · Jigsaw (κάθε ομάδα μία μεταβλητή)", q:"Από τι εξαρτάται η περίοδος ενός εκκρεμούς;",
+   phases:[
+    ["Προσανατολισμός · 10′","Έκπληξη: δύο εκκρεμή ίδιου μήκους, ένα με ελαφρύ και ένα με βαρύ βαρίδι. Πρώτα γραπτή πρόβλεψη: ποιο πάει πιο γρήγορα; Ξεκινούν μαζί και κινούνται μαζί."],
+    ["Εννοιολόγηση · 10′","Οι ομάδες γράφουν υποθέσεις για μάζα, μήκος και γωνία. Κάθε ομάδα αναλαμβάνει μία μεταβλητή και κρατά τις άλλες σταθερές."],
+    ["Διερεύνηση · 30′","Χρόνος 10 ταλαντώσεων, 3 φορές, μέση τιμή (Εργ. Οδηγός, άσκ. 7). Πίνακας και γράφημα."],
+    ["Συμπέρασμα · 20′","Jigsaw: οι ομάδες ανταλλάσσουν αποτελέσματα. Η περίοδος εξαρτάται από το μήκος, όχι από τη μάζα (για μικρές γωνίες)."],
+    ["Συζήτηση · 10′","Πού βρίσκουμε ταλαντώσεις στην καθημερινή ζωή; Εισιτήριο εξόδου με f = 1 / T."]],
+   mat:["Νήμα, 2 βαρίδια διαφορετικής μάζας","Ορθοστάτης","Μετροταινία","Χρονόμετρο ή κινητό"],
+   ict:["phyphox: μέτρηση περιόδου με τους αισθητήρες του κινητού","Σενάριο Αισώπου «Μελετάμε το εκκρεμές» για ιδέες"],
+   planB:"Χωρίς ορθοστάτες: νήμα δεμένο στην άκρη του θρανίου, κλειδιά ως βαρίδια.",
+   src:"Brod et al. (2018) · Aronson et al. (1978) · Lazonder & Harmsen (2016)"}
+];
+
+const TOOLS = [
+  {n:"PhET (στα ελληνικά)", u:"https://phet.colorado.edu/el/", d:"Δωρεάν προσομοιώσεις Φυσικής από το Πανεπιστήμιο του Κολοράντο, πολλές μεταφρασμένες."},
+  {n:"Φωτόδεντρο", u:"https://photodentro.edu.gr/lor/", d:"Το ελληνικό αποθετήριο μαθησιακών αντικειμένων για όλες τις τάξεις."},
+  {n:"Διαδραστικά σχολικά βιβλία", u:"https://ebooks.edu.gr/", d:"Τα βιβλία Φυσικής Γυμνασίου με εμπλουτισμένο ψηφιακό υλικό."},
+  {n:"Tracker", u:"https://physlets.org/tracker/", d:"Ανάλυση βίντεο κίνησης: θέση, ταχύτητα και διαγράμματα από βίντεο κινητού."},
+  {n:"GeoGebra", u:"https://www.geogebra.org/", d:"Διαγράμματα, πίνακες τιμών και δυναμικά σχήματα για τη Φυσική."},
+  {n:"Plickers", u:"https://www.plickers.com/", d:"Γρήγορα κουίζ τάξης με κάρτες, χωρίς κινητά για τους μαθητές."},
+  {n:"Αίσωπος (ΙΕΠ)", u:"https://aesop.iep.edu.gr/", d:"Ψηφιακά διδακτικά σενάρια. Για τη Γ΄ Γυμνασίου δείτε το «Μελετάμε το εκκρεμές»."},
+  {n:"phyphox", u:"https://phyphox.org/", d:"Δωρεάν εφαρμογή του RWTH Aachen που κάνει το κινητό όργανο μέτρησης (επιτάχυνση, ήχος, πίεση). Διαθέσιμη στα ελληνικά."}
+];
+
+const REFS = {
+  "Θεσμικά κείμενα":[
+    "ΥΠΑΙΘΑ (2026). <i>Οδηγίες διδασκαλίας του μαθήματος της Φυσικής του Ημερήσιου και του Εσπερινού Γυμνασίου για το σχολικό έτος 2026-2027</i> (Εγκ. 111919/Δ2/28-08-2026)."],
+  "Διερεύνηση και Διδακτική της Φυσικής":[
+    "Bybee, R. W., et al. (2006). <i>The BSCS 5E instructional model: Origins and effectiveness</i>. BSCS.",
+    "Crouch, C. H., & Mazur, E. (2001). Peer instruction: Ten years of experience and results. <i>American Journal of Physics, 69</i>(9), 970–977.",
+    "Driver, R., Squires, A., Rushworth, P., & Wood-Robinson, V. (1994). <i>Making sense of secondary science</i>. Routledge.",
+    "Keogh, B., & Naylor, S. (1999). Concept cartoons, teaching and learning in science. <i>International Journal of Science Education, 21</i>(4), 431–446.",
+    "Kirschner, P. A., Sweller, J., & Clark, R. E. (2006). Why minimal guidance during instruction does not work. <i>Educational Psychologist, 41</i>(2), 75–86.",
+    "Lazonder, A. W., & Harmsen, R. (2016). Meta-analysis of inquiry-based learning: Effects of guidance. <i>Review of Educational Research, 86</i>(3), 681–718.",
+    "Minner, D. D., Levy, A. J., & Century, J. (2010). Inquiry-based science instruction—what is it and does it matter? <i>Journal of Research in Science Teaching, 47</i>(4), 474–496.",
+    "Pedaste, M., et al. (2015). Phases of inquiry-based learning: Definitions and the inquiry cycle. <i>Educational Research Review, 14</i>, 47–61.",
+    "Posner, G. J., Strike, K. A., Hewson, P. W., & Gertzog, W. A. (1982). Accommodation of a scientific conception. <i>Science Education, 66</i>(2), 211–227."],
+  "ΤΠΕ και πολυμέσα":[
+    "Mayer, R. E. (2020). <i>Multimedia learning</i> (3rd ed.). Cambridge University Press.",
+    "Rutten, N., van Joolingen, W. R., & van der Veen, J. T. (2012). The learning effects of computer simulations in science education. <i>Computers & Education, 58</i>(1), 136–153.",
+    "Wieman, C. E., Adams, W. K., & Perkins, K. K. (2008). PhET: Simulations that enhance learning. <i>Science, 322</i>(5902), 682–683."],
+  "Νευροεπιστήμη και ψυχολογία εφήβων":[
+    "Blakemore, S.-J. (2008). The social brain in adolescence. <i>Nature Reviews Neuroscience, 9</i>(4), 267–277.",
+    "Brod, G., Hasselhorn, M., & Bunge, S. A. (2018). When generating a prediction boosts learning: The element of surprise. <i>Learning and Instruction, 55</i>, 22–31.",
+    "Casey, B. J., Jones, R. M., & Hare, T. A. (2008). The adolescent brain. <i>Annals of the New York Academy of Sciences, 1124</i>, 111–126.",
+    "Cepeda, N. J., et al. (2006). Distributed practice in verbal recall tasks. <i>Psychological Bulletin, 132</i>(3), 354–380.",
+    "Pashler, H., McDaniel, M., Rohrer, D., & Bjork, R. (2008). Learning styles: Concepts and evidence. <i>Psychological Science in the Public Interest, 9</i>(3), 105–119.",
+    "Roediger, H. L., & Karpicke, J. D. (2006). Test-enhanced learning. <i>Psychological Science, 17</i>(3), 249–255."],
+  "Παιδαγωγικές τεχνικές και αξιολόγηση":[
+    "Aronson, E., et al. (1978). <i>The jigsaw classroom</i>. Sage.",
+    "Black, P., & Wiliam, D. (1998). Assessment and classroom learning. <i>Assessment in Education, 5</i>(1), 7–74.",
+    "CAST (2024). <i>Universal Design for Learning Guidelines version 3.0</i>.",
+    "Johnson, D. W., & Johnson, R. T. (2009). An educational psychology success story: Social interdependence theory and cooperative learning. <i>Educational Researcher, 38</i>(5), 365–379.",
+    "Tomlinson, C. A. (2014). <i>The differentiated classroom</i> (2nd ed.). ASCD."]
+};
+
+const REVIEWS = [
+  ["Επιμορφωτής/τρια SUB.8","Η ύλη ακολουθεί τις οδηγίες 2026-27. Ο νόμος Coulomb έγινε μόνο ποιοτικός (Γ΄). Προστέθηκε το εκκρεμές, που οι οδηγίες ζητούν να διερευνήσουν οι μαθητές. Κάθε σενάριο έχει ερώτημα, φάσεις, υλικά, ΤΠΕ με ρόλο, εισιτήριο εξόδου και Plan B.","Δεν περιλαμβάνεται ακόμη μικροδιδασκαλία ούτε αναλυτική ρουμπρίκα. Χρειάζονται για κατάθεση στο SUB.8.","Επαρκές με αναθεωρήσεις"],
+  ["Διδάκτορας Διδακτικής ΦΕ & ΤΠΕ","Οι έννοιες και οι μονάδες SI ελέγχθηκαν. Αφαιρέθηκε το Kelvin από την Α΄, γιατί δεν ανήκει στην ύλη. Κάθε σενάριο ξεκινά με φαινόμενο-έκπληξη μετά από γραπτή πρόβλεψη και δηλώνει το επίπεδο διερεύνησης. Οι ισχυρισμοί παραπέμπουν σε πηγές με κριτές.","Τα κουίζ είναι κυρίως ανάκληση και εφαρμογή· λίγες ερωτήσεις ανώτερης σκέψης.","Ικανοποιητική"],
+  ["Σχολικός/ή Ψυχολόγος","Το κουίζ δίνει εξήγηση και στη σωστή και στη λάθος απάντηση, χωρίς σύγκριση με άλλους. Οι βαθμολογίες μένουν μόνο στη συσκευή του μαθητή. Χρησιμοποιείται ανώνυμη ψηφοφορία πριν από τη συζήτηση. Δεν υπάρχουν νευρομύθοι (μαθησιακά στυλ).","Το κείμενο είναι πυκνό για μαθητές με δυσλεξία· χρειάζεται εκδοχή με απλούστερη διατύπωση και ηχητική ανάγνωση.","Κατάλληλο με προσαρμογές"]
+];
+
+/* ---------------- STORAGE (optional) ---------------- */
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+
+/* ---------------- ROUTING ---------------- */
+const ROUTES = {"arxiki":"arxiki","a-gymnasiou":"a","b-gymnasiou":"b","g-gymnasiou":"g","synadelfoi":"synadelfoi","senaria":"senaria"};
+function route(){
+  const h = (location.hash || "#arxiki").slice(1);
+  const r = ROUTES[h] || "arxiki";
+  document.querySelectorAll("main section.view").forEach(s=>s.classList.remove("active"));
+  let navKey = r;
+  if(r==="a"||r==="b"||r==="g"){ document.getElementById("view-mathites").classList.add("active"); renderClass(r); navKey="mathites"; }
+  else if(r==="synadelfoi"||r==="senaria"){ document.getElementById("view-synadelfoi").classList.add("active"); selectTab(r==="senaria"?"t-sce":"t-ped"); navKey="synadelfoi"; }
+  else { document.getElementById("view-arxiki").classList.add("active"); }
+  document.querySelectorAll("nav.main a").forEach(a=>{ if(a.dataset.nav===navKey) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+}
+window.addEventListener("hashchange", ()=>{ route(); window.scrollTo(0,0); });
+
+/* ---------------- STUDENTS ---------------- */
+function renderClass(c){
+  const C = CLASSES[c];
+  document.getElementById("classTitle").textContent = C.title;
+  document.getElementById("classIntro").textContent = C.intro;
+  document.querySelectorAll(".classtabs a").forEach(a=>{ if(a.dataset.class===c) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+  const box = document.getElementById("topicCards");
+  box.innerHTML = "";
+  C.topics.forEach((t,i)=>{
+    const best = store.get("best-"+t.id);
+    const card = document.createElement("article");
+    card.className = "card";
+    card.innerHTML = `<div class="num">ΕΝΟΤΗΤΑ ${i+1}</div><h3>${t.name}</h3><ul>${t.keys.map(k=>`<li>${k}</li>`).join("")}</ul>
+      ${best!==null && best!==undefined ? `<div class="score">Καλύτερη επίδοση: ${best}/5</div>` : ""}
+      <div class="actions"><button class="btn small solid" type="button" data-quiz="${t.id}">Κουίζ (5 ερωτήσεις)</button><button class="btn small" type="button" data-sheet="${t.id}">Φύλλο εργασίας</button></div>`;
+    box.appendChild(card);
+  });
+}
+function findTopic(id){ for(const c of Object.keys(CLASSES)) for(const t of CLASSES[c].topics) if(t.id===id) return {t, cls:CLASSES[c].title}; }
+
+const panel = document.getElementById("panel"), pBody = document.getElementById("panelBody");
+let lastFocus = null;
+function openPanel(kicker, title){
+  lastFocus = document.activeElement;
+  document.getElementById("panelKicker").textContent = kicker;
+  document.getElementById("panelTitle").textContent = title;
+  panel.classList.add("open");
+  document.getElementById("panelClose").focus();
+}
+function closePanel(){ panel.classList.remove("open"); if(lastFocus) lastFocus.focus(); const c = currentClass(); if(c) renderClass(c); }
+function currentClass(){ const r = ROUTES[(location.hash||"").slice(1)]; return (r==="a"||r==="b"||r==="g") ? r : null; }
+document.getElementById("panelClose").addEventListener("click", closePanel);
+panel.addEventListener("click", e=>{ if(e.target===panel) closePanel(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && panel.classList.contains("open")) closePanel(); });
+
+document.addEventListener("click", e=>{
+  const q = e.target.closest("[data-quiz]"); if(q){ startQuiz(q.dataset.quiz); return; }
+  const s = e.target.closest("[data-sheet]"); if(s){ showSheet(s.dataset.sheet); return; }
+});
+
+function startQuiz(id){
+  const {t, cls} = findTopic(id);
+  let i = 0, score = 0;
+  openPanel("Κουίζ · "+cls, t.name);
+  function show(){
+    const Q = t.quiz[i];
+    pBody.innerHTML = `<div class="mono" style="font-size:.85rem;color:var(--muted)">Ερώτηση ${i+1} από ${t.quiz.length} · Σωστές: ${score}</div>
+      <div class="progress"><i style="width:${(i/t.quiz.length)*100}%"></i></div>
+      <div class="q-text">${Q.q}</div>
+      <div class="opts">${Q.o.map((o,k)=>`<button class="opt" type="button" data-k="${k}">${String.fromCharCode(913+k)}. ${o}</button>`).join("")}</div>
+      <div class="explain" id="exp"></div>
+      <div class="panel-foot"><span></span><button class="btn small solid" id="next" type="button" disabled>${i<t.quiz.length-1?"Επόμενη ερώτηση":"Δες το αποτέλεσμα"}</button></div>`;
+    pBody.querySelectorAll(".opt").forEach(b=>b.addEventListener("click", ()=>{
+      const k = +b.dataset.k, right = k===Q.a;
+      if(right) score++;
+      pBody.querySelectorAll(".opt").forEach((x,j)=>{ x.disabled = true; if(j===Q.a) x.classList.add("right"); });
+      if(!right) b.classList.add("wrong");
+      const ex = document.getElementById("exp");
+      ex.innerHTML = `<b>${right?"Σωστά!":"Όχι ακριβώς."}</b> ${Q.e}`;
+      ex.classList.add("show");
+      const n = document.getElementById("next"); n.disabled = false; n.focus();
+    }));
+    document.getElementById("next").addEventListener("click", ()=>{ i++; if(i<t.quiz.length) show(); else finish(); });
+  }
+  function finish(){
+    const prev = store.get("best-"+id);
+    if(prev===null || prev===undefined || score>prev) store.set("best-"+id, score);
+    const msg = score===5 ? "Τέλεια! Κατέχεις την ενότητα." : score>=3 ? "Καλή δουλειά. Ξαναδιάβασε τις εξηγήσεις όπου έκανες λάθος." : "Ξαναδοκίμασε αφού διαβάσεις τους βασικούς τύπους της ενότητας.";
+    pBody.innerHTML = `<div class="progress"><i style="width:100%"></i></div>
+      <div class="result-big mono">${score}/5</div><p style="margin:6px 0 16px">${msg}</p>
+      <div class="panel-foot"><button class="btn small" type="button" id="again">Ξανά από την αρχή</button><button class="btn small solid" type="button" id="toSheet">Φύλλο εργασίας της ενότητας</button></div>`;
+    document.getElementById("again").addEventListener("click", ()=>{ i=0; score=0; show(); });
+    document.getElementById("toSheet").addEventListener("click", ()=>showSheet(id));
+  }
+  show();
+}
+
+function showSheet(id){
+  const {t, cls} = findTopic(id);
+  if(!panel.classList.contains("open")) openPanel("Φύλλο εργασίας · "+cls, t.name);
+  else { document.getElementById("panelKicker").textContent = "Φύλλο εργασίας · "+cls; document.getElementById("panelTitle").textContent = t.name; }
+  const plain = `ΦΥΛΛΟ ΕΡΓΑΣΙΑΣ — ${cls} — ${t.name}\nΟνοματεπώνυμο: ____________________  Τμήμα: ____  Ημερομηνία: ________\n\n` + t.sheet.map((s,k)=>`${k+1}. ${s}\n\n__________________________________________\n__________________________________________\n`).join("\n");
+  pBody.innerHTML = `<div class="sheet">
+    <div class="meta"><span>Ονοματεπώνυμο: ____________________</span><span>Τμήμα: ______</span><span>Ημερομηνία: ________</span></div>
+    <ol>${t.sheet.map(s=>`<li>${s}<div class="lines"></div><div class="lines"></div></li>`).join("")}</ol></div>
+    <div class="panel-foot"><span class="toast" id="toast" aria-live="polite"></span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small" type="button" id="toQuiz">Κάνε το κουίζ</button><button class="btn small solid" type="button" id="copySheet">Αντιγραφή κειμένου</button></div></div>`;
+  document.getElementById("copySheet").addEventListener("click", async ()=>{
+    const tt = document.getElementById("toast");
+    try{ await navigator.clipboard.writeText(plain); tt.textContent = "Αντιγράφηκε. Επικόλλησέ το σε έγγραφο για εκτύπωση."; }
+    catch(e){ tt.textContent = "Η αντιγραφή δεν επιτράπηκε από τον browser. Επίλεξε το κείμενο και αντέγραψέ το χειροκίνητα."; }
+  });
+  document.getElementById("toQuiz").addEventListener("click", ()=>startQuiz(id));
+}
+
+/* ---------------- TEACHERS ---------------- */
+function renderTeachers(){
+  document.getElementById("pedCards").innerHTML = PEDAGOGY.map(p=>`<article class="card"><div class="num">${p.k}</div><h3>${p.t}</h3><p>${p.p}</p><ul>${p.li.map(l=>`<li>${l}</li>`).join("")}</ul><p class="src">Τεκμηρίωση: ${p.src}</p></article>`).join("");
+  document.getElementById("refs").innerHTML = Object.entries(REFS).map(([h,l])=>`<div class="box"><h4>${h}</h4><ul class="reflist">${l.map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+  document.getElementById("revBody").innerHTML = REVIEWS.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td><td><span class="pill">${r[3]}</span></td></tr>`).join("");
+  document.getElementById("misBody").innerHTML = MISCONCEPTIONS.map(m=>`<tr><td><span class="pill">${m[0]}</span></td><td>${m[1]}</td><td>${m[2]}</td><td>${m[3]}</td></tr>`).join("");
+  document.getElementById("scenarios").innerHTML = SCENARIOS.map((s,i)=>`<article class="scenario">
+    <div class="kicker">Σενάριο ${i+1} · ${s.cls}</div><h3>${s.title}</h3>
+    <div class="scen-meta"><span class="pill">${s.topic}</span><span class="pill">${s.dur}</span><span class="pill">${s.level}</span><span class="pill">${s.tech}</span></div>
+    <p><b>Ερευνητικό ερώτημα:</b> ${s.q}</p>
+    <div class="phases">${s.phases.map(p=>`<div class="phase"><b>${p[0]}</b><div>${p[1]}</div></div>`).join("")}</div>
+    <div class="two"><div class="box"><h4>Υλικά</h4><ul>${s.mat.map(x=>`<li>${x}</li>`).join("")}</ul></div><div class="box"><h4>ΤΠΕ</h4><ul>${s.ict.map(x=>`<li>${x}</li>`).join("")}</ul></div></div>
+    <p class="planb"><b>Plan B:</b> ${s.planB}</p>
+    <p class="src">Τεκμηρίωση: ${s.src}</p>
+    <div class="panel-foot"><span class="toast" id="st${i}" aria-live="polite"></span><button class="btn small" type="button" data-copyscen="${i}">Αντιγραφή σεναρίου</button></div>
+  </article>`).join("");
+  document.getElementById("tools").innerHTML = TOOLS.map(t=>`<div class="tool"><a href="${t.u}" target="_blank" rel="noopener">${t.n}</a><p>${t.d}</p></div>`).join("");
+  document.querySelectorAll("[data-copyscen]").forEach(b=>b.addEventListener("click", async ()=>{
+    const i = +b.dataset.copyscen, s = SCENARIOS[i], tt = document.getElementById("st"+i);
+    const strip = h=>h.replace(/<[^>]+>/g,"");
+    const txt = `${s.title} (${s.cls} · ${s.topic} · ${s.dur})\nΕπίπεδο: ${s.level} · Τεχνικές: ${s.tech}\nΕρευνητικό ερώτημα: ${s.q}\n\n` + s.phases.map(p=>`${p[0]}: ${strip(p[1])}`).join("\n") + `\n\nΥλικά: ${s.mat.join(", ")}\nΤΠΕ: ${s.ict.join(", ")}\nPlan B: ${s.planB}\nΤεκμηρίωση: ${s.src}`;
+    try{ await navigator.clipboard.writeText(txt); tt.textContent = "Αντιγράφηκε."; }
+    catch(e){ tt.textContent = "Η αντιγραφή δεν επιτράπηκε. Επίλεξε το κείμενο χειροκίνητα."; }
+  }));
+}
+function selectTab(id){
+  document.querySelectorAll(".tabs2 button").forEach(b=>{
+    const on = b.id===id; b.setAttribute("aria-selected", on);
+    document.getElementById(b.getAttribute("aria-controls")).classList.toggle("active", on);
+  });
+}
+document.querySelectorAll(".tabs2 button").forEach(b=>b.addEventListener("click", ()=>selectTab(b.id)));
+
+/* ---------------- MINI LAB ---------------- */
+(function(){
+  const cv = document.getElementById("track"), ctx = cv.getContext("2d");
+  const sp = document.getElementById("speed"), spv = document.getElementById("speedVal");
+  const rT = document.getElementById("rT"), rX = document.getElementById("rX"), rV = document.getElementById("rV");
+  const L = 10; let t = 0, running = false, last = 0;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fmt = (n,d=1)=> n.toFixed(d).replace(".",",");
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  function draw(){
+    const v = +sp.value, x = Math.min(v*t, L);
+    const W = cv.width, H = cv.height, pad = 36, scale = (W-2*pad)/L;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = css("--paper"); ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle = css("--muted"); ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(pad, H-30); ctx.lineTo(W-pad, H-30); ctx.stroke();
+    ctx.fillStyle = css("--muted"); ctx.font = "13px 'Fira Mono', monospace"; ctx.textAlign = "center";
+    for(let m=0;m<=L;m+=1){ const px = pad+m*scale; ctx.beginPath(); ctx.moveTo(px,H-30); ctx.lineTo(px, H-(m%5===0?20:25)); ctx.stroke(); if(m%2===0) ctx.fillText(m+" m", px, H-6); }
+    const cx = pad + x*scale;
+    ctx.fillStyle = css("--accent"); ctx.fillRect(cx-22, H-62, 44, 22);
+    ctx.fillStyle = css("--ink");
+    ctx.beginPath(); ctx.arc(cx-12, H-36, 6, 0, Math.PI*2); ctx.arc(cx+12, H-36, 6, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = css("--mark"); ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(pad+L*scale, H-80); ctx.lineTo(pad+L*scale, H-30); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = css("--mark"); ctx.fillText("τέρμα", pad+L*scale, H-84);
+    rT.textContent = fmt(t)+" s"; rX.textContent = fmt(x)+" m"; rV.textContent = t>0 ? fmt(x/t)+" m/s" : "—";
+  }
+  function step(now){
+    if(!running) return;
+    const dt = (now-last)/1000; last = now; t += dt;
+    if(+sp.value*t >= L){ t = L/(+sp.value); running = false; document.getElementById("labRun").textContent = "Ξεκίνα"; }
+    draw(); if(running) requestAnimationFrame(step);
+  }
+  document.getElementById("labRun").addEventListener("click", e=>{
+    if(running){ running=false; e.target.textContent="Συνέχισε"; return; }
+    if(+sp.value*t >= L) t = 0;
+    if(reduce){ t = L/(+sp.value); draw(); return; }
+    running = true; e.target.textContent = "Παύση"; last = performance.now(); requestAnimationFrame(step);
+  });
+  document.getElementById("labReset").addEventListener("click", ()=>{ running=false; t=0; document.getElementById("labRun").textContent="Ξεκίνα"; draw(); });
+  sp.addEventListener("input", ()=>{ spv.textContent = fmt(+sp.value)+" m/s"; draw(); });
+  // resting state: show the cart part-way with readings
+  t = 2; draw();
+  const mq = window.matchMedia("(prefers-color-scheme: dark)"); if(mq.addEventListener) mq.addEventListener("change", draw);
+  new MutationObserver(draw).observe(document.documentElement,{attributes:true, attributeFilter:["data-theme"]});
+})();
+
+renderTeachers();
+route();
+</script>
+</body>
+</html>
