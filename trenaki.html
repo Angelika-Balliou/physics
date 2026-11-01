@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Το τρενάκι μας · Μετράμε την ταχύτητα</title>
+<style>
+  :root{--navy:#14213d;--teal:#0f766e;--amber:#d97706;--bg:#f6f7fb;--line:#d9dee8;--ink:#1f2937;--muted:#5b6474}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+  header{background:var(--navy);color:#fff;padding:18px 20px}
+  header h1{margin:0;font-size:1.35rem}
+  header p{margin:4px 0 0;opacity:.85;font-size:.95rem}
+  nav{display:flex;gap:8px;padding:10px 20px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+  nav button{border:1px solid var(--line);background:#fff;padding:8px 14px;border-radius:999px;font-size:.95rem;cursor:pointer}
+  nav button[aria-selected=true]{background:var(--teal);color:#fff;border-color:var(--teal)}
+  main{max-width:1100px;margin:0 auto;padding:18px 16px 40px}
+  section{display:none}
+  section.on{display:block}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+  .vid{position:relative;background:#000;border-radius:10px;overflow:hidden}
+  video{display:block;width:100%;height:auto}
+  .clock{position:absolute;left:12px;bottom:12px;background:rgba(20,33,61,.88);color:#4ade80;font:700 1.6rem ui-monospace,Consolas,monospace;padding:6px 12px;border-radius:8px}
+  .clock small{display:block;color:#cbd5e1;font:500 .7rem system-ui}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+  .controls button,.btn{border:0;background:var(--navy);color:#fff;padding:10px 14px;border-radius:8px;font-size:1rem;cursor:pointer;min-width:48px}
+  .controls button.alt,.btn.alt{background:#e8ecf4;color:var(--ink)}
+  .btn.go{background:var(--teal)}
+  input[type=range]{flex:1;min-width:200px}
+  label{font-size:.92rem;color:var(--muted)}
+  input[type=number]{width:110px;padding:9px;border:1px solid var(--line);border-radius:8px;font-size:1rem}
+  table{border-collapse:collapse;width:100%;margin-top:10px;font-size:.98rem}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:center}
+  th{background:#eef2f8}
+  .res{font-size:1.15rem;margin-top:12px}
+  .res b{color:var(--teal)}
+  .steps li{margin:4px 0}
+  .tip{background:#fff7e6;border-left:4px solid var(--amber);padding:10px 12px;border-radius:6px;font-size:.95rem}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+  .big{font-size:1.6rem;font-weight:700}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🚂 Το τρενάκι μας · Μετράμε την ταχύτητα</h1>
+  <p>Φυσική Β΄ Γυμνασίου · ΚΕΦ. 2 Κινήσεις · 2.2 Η έννοια της ταχύτητας</p>
+</header>
+<nav role="tablist">
+  <button role="tab" aria-selected="true" data-tab="video">🎥 Βίντεο &amp; μετρήσεις</button>
+  <button role="tab" aria-selected="false" data-tab="calc">🧮 Υπολογιστής ταχύτητας</button>
+</nav>
+<main>
+<section id="video" class="on">
+  <div class="card">
+    <ol class="steps">
+      <li>Παίξτε το βίντεο. Είναι σε <b>αργή κίνηση ×4</b>· το χρονόμετρο δείχνει τον <b>πραγματικό</b> χρόνο.</li>
+      <li>Σταματήστε (⏸) τη στιγμή που η μπροστινή άκρη του τρένου περνά από ένα σημάδι της μεζούρας. Με τα κουμπιά ◀ ▶ πηγαίνετε καρέ-καρέ.</li>
+      <li>Γράψτε τη θέση <b>x</b> που διαβάζετε στη μεζούρα (σε cm) και πατήστε <b>Καταγραφή</b>. Ο χρόνος <b>t</b> γράφεται μόνος του.</li>
+      <li>Κάντε τουλάχιστον 4 μετρήσεις. Ο πίνακας υπολογίζει την ταχύτητα σε κάθε διάστημα και τη μέση ταχύτητα.</li>
+    </ol>
+  </div>
+  <div class="vid">
+    <video id="v" src="media/trenaki.mp4" playsinline preload="auto" muted></video>
+    <div class="clock"><span id="clk">0,000 s</span><small>πραγματικός χρόνος</small></div>
+  </div>
+  <div class="controls">
+    <button id="play" aria-label="Αναπαραγωγή ή παύση">▶</button>
+    <button class="alt" id="back" aria-label="Ένα καρέ πίσω">◀ καρέ</button>
+    <button class="alt" id="fwd" aria-label="Ένα καρέ μπροστά">καρέ ▶</button>
+    <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Θέση βίντεο">
+    <label>Ταχύτητα βίντεο
+      <select id="rate"><option value="0.25">0,25×</option><option value="0.5">0,5×</option><option value="1" selected>1×</option></select>
+    </label>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="controls" style="margin-top:0">
+      <label>Θέση x (cm): <input type="number" id="xin" step="1" placeholder="π.χ. 50"></label>
+      <button class="btn go" id="rec">➕ Καταγραφή</button>
+      <button class="btn alt" id="undo">↶ Αναίρεση</button>
+      <button class="btn alt" id="clear">Καθαρισμός</button>
+    </div>
+    <table>
+      <thead><tr><th>#</th><th>x (cm)</th><th>t (s)</th><th>Δx (m)</th><th>Δt (s)</th><th>υ = Δx/Δt (m/s)</th></tr></thead>
+      <tbody id="tb"><tr><td colspan="6" style="color:#5b6474">Δεν υπάρχουν μετρήσεις ακόμα.</td></tr></tbody>
+    </table>
+    <div class="res" id="sum"></div>
+  </div>
+  <p class="tip">💡 Αν οι ταχύτητες στα διαστήματα βγαίνουν σχεδόν ίδιες, τι συμπεραίνετε για την κίνηση του τρένου; Τι θα έδειχνε ένα «κοντέρ» πάνω του;</p>
+</section>
+
+<section id="calc">
+  <div class="card">
+    <h2 style="margin-top:0">🧮 Υπολογιστής μέσης ταχύτητας</h2>
+    <div class="grid">
+      <label>Αρχική θέση x₁ (m)<br><input type="number" id="x1" step="any" value="0"></label>
+      <label>Τελική θέση x₂ (m)<br><input type="number" id="x2" step="any" value="10"></label>
+      <label>Αρχική χρονική στιγμή t₁ (s)<br><input type="number" id="t1" step="any" value="0"></label>
+      <label>Τελική χρονική στιγμή t₂ (s)<br><input type="number" id="t2" step="any" value="8"></label>
+    </div>
+    <div class="res" id="cres"></div>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0">🔁 Μετατροπή μονάδων</h2>
+    <div class="grid">
+      <label>m/s<br><input type="number" id="ms" step="any" value="10"></label>
+      <label>km/h<br><input type="number" id="kmh" step="any" value="36"></label>
+    </div>
+    <p class="tip">m/s → km/h: πολλαπλασιάζω επί 3,6 · km/h → m/s: διαιρώ διά 3,6 (γιατί 1 m/s = 3600 m σε 1 h = 3,6 km/h)</p>
+  </div>
+</section>
+</main>
+<footer>Βίντεο: πείραμα της τάξης μας (αργή κίνηση ×4). Μπορείτε να το χρησιμοποιήσετε ελεύθερα στο μάθημα.</footer>
+<script>
+const SLOW=4, FPS=30;
+const fmt=(n,d)=>Number.isFinite(n)?n.toFixed(d).replace('.',','):'—';
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===b.dataset.tab));
+  history.replaceState(null,'','#'+b.dataset.tab);
+});
+if(location.hash==='#calc')document.querySelector('[data-tab=calc]').click();
+
+const v=document.getElementById('v'),clk=document.getElementById('clk'),seek=document.getElementById('seek'),play=document.getElementById('play');
+const real=()=>v.currentTime/SLOW;
+function tick(){clk.textContent=fmt(real(),3)+' s'; if(v.duration)seek.value=Math.round(v.currentTime/v.duration*1000); play.textContent=v.paused?'▶':'⏸';}
+v.addEventListener('timeupdate',tick);v.addEventListener('loadedmetadata',tick);v.addEventListener('play',tick);v.addEventListener('pause',tick);
+(function loop(){if(!v.paused)tick();requestAnimationFrame(loop)})();
+play.onclick=()=>v.paused?v.play():v.pause();
+document.getElementById('back').onclick=()=>{v.pause();v.currentTime=Math.max(0,v.currentTime-1/FPS)};
+document.getElementById('fwd').onclick=()=>{v.pause();v.currentTime=Math.min(v.duration||0,v.currentTime+1/FPS)};
+seek.oninput=()=>{if(v.duration)v.currentTime=seek.value/1000*v.duration};
+document.getElementById('rate').onchange=e=>v.playbackRate=+e.target.value;
+
+let rows=[];
+function draw(){
+  const tb=document.getElementById('tb'),sum=document.getElementById('sum');
+  if(!rows.length){tb.innerHTML='<tr><td colspan="6" style="color:#5b6474">Δεν υπάρχουν μετρήσεις ακόμα.</td></tr>';sum.innerHTML='';return}
+  tb.innerHTML=rows.map((r,i)=>{
+    if(!i)return `<tr><td>1</td><td>${fmt(r.x,0)}</td><td>${fmt(r.t,3)}</td><td>—</td><td>—</td><td>—</td></tr>`;
+    const p=rows[i-1],dx=(r.x-p.x)/100,dt=r.t-p.t;
+    return `<tr><td>${i+1}</td><td>${fmt(r.x,0)}</td><td>${fmt(r.t,3)}</td><td>${fmt(dx,2)}</td><td>${fmt(dt,3)}</td><td>${dt>0?fmt(dx/dt,2):'—'}</td></tr>`}).join('');
+  if(rows.length>1){const a=rows[0],b=rows[rows.length-1],dx=(b.x-a.x)/100,dt=b.t-a.t,u=dx/dt;
+    sum.innerHTML=dt>0?`Μέση ταχύτητα σε όλη τη διαδρομή: <b>${fmt(u,2)} m/s</b> = <b>${fmt(u*3.6,2)} km/h</b>`:'Ελέγξτε τους χρόνους.'}else sum.innerHTML='';
+}
+document.getElementById('rec').onclick=()=>{const x=parseFloat(document.getElementById('xin').value);
+  if(!Number.isFinite(x)){alertBox('Γράψτε πρώτα τη θέση x σε cm.');return}
+  rows.push({x,t:real()});rows.sort((a,b)=>a.t-b.t);document.getElementById('xin').value='';draw()};
+document.getElementById('undo').onclick=()=>{rows.pop();draw()};
+document.getElementById('clear').onclick=()=>{rows=[];draw()};
+function alertBox(msg){const s=document.getElementById('sum');s.innerHTML='<span style="color:#b45309">'+msg+'</span>'}
+
+const ids=['x1','x2','t1','t2'],g=id=>parseFloat(document.getElementById(id).value);
+function calc(){const dx=g('x2')-g('x1'),dt=g('t2')-g('t1'),r=document.getElementById('cres');
+  if(!(dt>0)){r.innerHTML='<span style="color:#b45309">Το Δt πρέπει να είναι θετικό.</span>';return}
+  const u=dx/dt;r.innerHTML=`Δx = ${fmt(dx,2)} m · Δt = ${fmt(dt,2)} s<br><span class="big">υ = Δx/Δt = ${fmt(u,2)} m/s</span> = <b>${fmt(u*3.6,2)} km/h</b>`}
+ids.forEach(i=>document.getElementById(i).oninput=calc);calc();
+const ms=document.getElementById('ms'),kmh=document.getElementById('kmh');
+ms.oninput=()=>{const n=parseFloat(ms.value);kmh.value=Number.isFinite(n)?+(n*3.6).toFixed(3):''};
+kmh.oninput=()=>{const n=parseFloat(kmh.value);ms.value=Number.isFinite(n)?+(n/3.6).toFixed(3):''};
+</script>
+</body>
+</html>
